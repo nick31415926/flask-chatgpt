@@ -1,0 +1,79 @@
+// ✅ Select chat elements
+const chatBox = document.getElementById("chat-box");
+const userInput = document.getElementById("user-input");
+
+// ✅ API URL (Updated to match Flask server IP)
+const API_URL = "http://192.168.1.212:5000";  
+
+// ✅ Handle sending messages
+async function sendMessage() {
+    const message = userInput.value.trim();
+    if (!message) return;
+
+    // Append user message with blue chat bubble
+    appendMessage("You", message, "user-message");
+    userInput.value = "";
+
+    // Show typing animation
+    showTypingIndicator();
+
+    try {
+        const response = await fetch(`${API_URL}/chat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: message })
+        });
+
+        const data = await response.json();
+
+        // Remove typing animation
+        removeTypingIndicator();
+
+        // Append AI response with dark gray chat bubble
+        appendMessage("ChatGPT", data.response, "bot-message");
+    } catch (error) {
+        console.error("Error:", error);
+        removeTypingIndicator();
+        appendMessage("Error", "Failed to connect to the server.", "bot-message");
+    }
+}
+
+// ✅ Function to append messages with bubbles
+function appendMessage(sender, message, className) {
+    const msgElement = document.createElement("div");
+    msgElement.classList.add("message", className);
+    msgElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+    chatBox.appendChild(msgElement);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// ✅ Show Typing Animation
+function showTypingIndicator() {
+    if (document.getElementById("typing-indicator")) return; // Prevent multiple indicators
+
+    const typingElement = document.createElement("div");
+    typingElement.classList.add("typing-indicator");
+    typingElement.id = "typing-indicator";
+    typingElement.innerHTML = "<span></span><span></span><span></span>";
+    chatBox.appendChild(typingElement);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// ✅ Remove Typing Animation
+function removeTypingIndicator() {
+    const typingElement = document.getElementById("typing-indicator");
+    if (typingElement) {
+        typingElement.remove();
+    }
+}
+
+// ✅ Clear Chat Function
+async function clearChat() {
+    try {
+        await fetch(`${API_URL}/clear_history`, { method: "POST" });
+        chatBox.innerHTML = ""; // Clear chat on frontend
+    } catch (error) {
+        console.error("Error:", error);
+    }
+}
+

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Chat</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <div class="chat-container">
+        <h2>ChatGPT Chat</h2>
+        <div id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="clearChat()">Clear Chat</button>
+    </div>
+
+    <!-- Corrected script path -->
+    <script src="static/app.js"></script>
+</body>
+</html>
+
