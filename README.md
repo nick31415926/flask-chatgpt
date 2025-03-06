@@ -35,6 +35,9 @@ $env:LOCALHOST_IP="your-ip-here" # For Windows (PowerShell)
 ```
 Alternatively, you can manually copy and paste the API key inside the `docker-compose.yml` file.
 
+Set your IP manually in \static\app.js on line 7:
+
+const LOCALHOST_IP = "127.0.0.1"; // Adjust based on your network
 ---
 ## 🐳 Running with Docker
 
