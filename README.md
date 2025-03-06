@@ -61,7 +61,7 @@ docker system prune -af
 
 Once the server is running, open your browser and go to:
 
-📌 **http://192.168.1.212:5000/** *(or `localhost:5000`)*
+📌 **http://127.0.0.1:5000/** *(or `localhost:5000`)*
 
 ### Basic Commands
 - **Chat** – Type a message and press Send.
