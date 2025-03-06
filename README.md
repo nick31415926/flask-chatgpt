@@ -17,7 +17,7 @@ NOTE: if running in docker, skip to step 5 as the dependencies will be installed
 
 ### 1️⃣  Clone the Repository
 ```sh
-git clone https://github.com/yourusername/flask-chatgpt.git
+git clone https://github.com/nick31415926/flask-chatgpt
 cd flask-chatgpt
 ```
 
