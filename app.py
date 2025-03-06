@@ -11,11 +11,16 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise ValueError("❌ OPENAI_API_KEY is missing. Set it as an environment variable.")
 
+# ✅ Load Local Host IP from environment variable
+LOCALHOST_IP = os.getenv("LOCALHOST_IP")
+if not LOCALHOST_IP:
+    raise ValueError("❌ LOCALHOST_IP is missing. Set it as an environment variable.")
+
 # ✅ Initialize OpenAI Client
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 # ✅ Set CORS properly to allow your frontend IP
-CORS(app, resources={r"/*": {"origins": ["http://192.168.1.212:5000"]}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": [f"http://{LOCALHOST_IP}:5000"]}}, supports_credentials=True)
 
 @app.route("/")
 def index():
@@ -25,7 +30,7 @@ def index():
 @app.route('/chat', methods=['OPTIONS'])
 def chat_options():
     response = make_response()
-    response.headers["Access-Control-Allow-Origin"] = "http://192.168.1.212:5000"
+    response.headers["Access-Control-Allow-Origin"] = f"http://{LOCALHOST_IP}:5000"
     response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     response.headers["Access-Control-Allow-Credentials"] = "true"
@@ -52,7 +57,7 @@ def chat():
 
     # ✅ Manually set CORS headers in the response
     response = make_response(jsonify({"response": assistant_reply, "history": session['history']}))
-    response.headers["Access-Control-Allow-Origin"] = "http://192.168.1.212:5000"
+    response.headers["Access-Control-Allow-Origin"] = f"http://{LOCALHOST_IP}:5000"
     response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     response.headers["Access-Control-Allow-Credentials"] = "true"
@@ -63,7 +68,7 @@ def chat():
 def clear_history():
     if request.method == "OPTIONS":
         response = make_response()
-        response.headers["Access-Control-Allow-Origin"] = "http://192.168.1.212:5000"
+        response.headers["Access-Control-Allow-Origin"] = f"http://{LOCALHOST_IP}:5000"
         response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
         response.headers["Access-Control-Allow-Credentials"] = "true"
@@ -72,7 +77,7 @@ def clear_history():
     session.pop('history', None)
     
     response = make_response(jsonify({"message": "Chat history cleared."}))
-    response.headers["Access-Control-Allow-Origin"] = "http://192.168.1.212:5000"
+    response.headers["Access-Control-Allow-Origin"] = f"http://{LOCALHOST_IP}:5000"
     response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     response.headers["Access-Control-Allow-Credentials"] = "true"
@@ -81,4 +86,3 @@ def clear_history():
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
-

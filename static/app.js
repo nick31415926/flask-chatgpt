@@ -2,8 +2,9 @@
 const chatBox = document.getElementById("chat-box");
 const userInput = document.getElementById("user-input");
 
-// ✅ API URL (using your Flask server IP)
-const API_URL = "http://192.168.1.212:5000";
+// ✅ API URL (using your Flask server IP from environment variable)
+const LOCALHOST_IP = process.env.LOCALHOST_IP || "localhost"; // Fallback to localhost if not set
+const API_URL = `http://${LOCALHOST_IP}:5000`;
 
 // ✅ Focus input field when user taps anywhere on chat
 document.addEventListener("click", () => {
@@ -96,6 +97,7 @@ async function clearChat() {
         console.error("Error:", error);
     }
 }
+
 // ✅ Save chat as a text file with a timestamped filename
 function saveChat() {
     let chatContent = "";
