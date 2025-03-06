@@ -4,8 +4,8 @@ const userInput = document.getElementById("user-input");
 
 // ✅ API URL (using your Flask server IP from environment variable)
 // DOES NOT WORK - const LOCALHOST_IP = process.env.LOCALHOST_IP || "localhost"; // Fallback to localhost if not set
-const LOCALHOST_IP = "127.0.0.1"; // Adjust based on your network
-
+//const LOCALHOST_IP = "127.0.0.1"; // Adjust based on your network
+const API_URL = "http://127.0.0.1:5000";  
 
 // ✅ Focus input field when user taps anywhere on chat
 document.addEventListener("click", () => {
