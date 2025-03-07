@@ -1,3 +1,5 @@
 flask
 openai
 flask-cors
+flask-session 
+redis
