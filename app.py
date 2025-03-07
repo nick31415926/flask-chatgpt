@@ -89,14 +89,29 @@ def chat():
 
 @app.route('/clear_history', methods=['POST'])
 def clear_history():
-    user_id = session.get('user_id', request.remote_addr)
-    redis_key = f"chat_history:{user_id}"
-    redis_conn.delete(redis_key)
-    return jsonify({"message": "Chat history cleared."}), 200
+    try:
+        user_id = session.get('user_id', request.remote_addr)
+        redis_key = f"chat_history:{user_id}"
+        redis_conn.delete(redis_key)  # ✅ Ensure Redis is cleared
+        return jsonify({"message": "Chat history cleared."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route('/config')
 def config():
     return jsonify({"api_url": f"http://{LOCALHOST_IP}:5000"})
+
+@app.route('/history')
+def get_chat_history():
+    user_id = session.get('user_id', request.remote_addr)
+    redis_key = f"chat_history:{user_id}"
+
+    # Retrieve and parse chat history
+    chat_history = redis_conn.lrange(redis_key, 0, -1)
+    messages = [json.loads(msg) for msg in chat_history]  # Convert JSON strings back to dicts
+
+    return jsonify({"history": messages})
 
 
 if __name__ == '__main__':

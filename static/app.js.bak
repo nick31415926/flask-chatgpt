@@ -3,9 +3,17 @@ const chatBox = document.getElementById("chat-box");
 const userInput = document.getElementById("user-input");
 
 // ✅ API URL (using your Flask server IP from environment variable)
-// DOES NOT WORK - const LOCALHOST_IP = process.env.LOCALHOST_IP || "localhost"; // Fallback to localhost if not set
-//const LOCALHOST_IP = "127.0.0.1"; // Adjust based on your network
-const API_URL = "http://127.0.0.1:5000";  
+let API_URL = "http://127.0.0.1:5000"; // Default fallback
+
+// Fetch LOCALHOST_IP from the Flask backend
+fetch("/config")
+  .then(response => response.json())
+  .then(data => {
+      API_URL = data.api_url;
+      console.log("API URL Set to:", API_URL);
+  })
+  .catch(error => console.error("Failed to fetch config:", error));
+
 
 // ✅ Focus input field when user taps anywhere on chat
 document.addEventListener("click", () => {
