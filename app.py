@@ -47,7 +47,7 @@ def chat():
     redis_key = f"chat_history:{user_id}"
 
     # ✅ Retrieve chat history from Redis
-    chat_history = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True).lrange(redis_key, 0, -1)
+    chat_history = redis.StrictRedis(host='redis', port=6379, db=0, decode_responses=True).lrange(redis_key, 0, -1)
 
     # ✅ Convert history to list of messages
     messages = [{"role": "system", "content": "You are a helpful assistant."}]
@@ -61,9 +61,9 @@ def chat():
     messages = messages[-10:]
 
     # ✅ Save updated history back to Redis
-    redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True).delete(redis_key)
+    redis.StrictRedis(host='redis', port=6379, db=0, decode_responses=True).delete(redis_key)
     for msg in messages:
-        redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True).rpush(redis_key, str(msg))
+        redis.StrictRedis(host='redis', port=6379, db=0, decode_responses=True).rpush(redis_key, str(msg))
 
     # ✅ Send request to OpenAI API
     response = client.chat.completions.create(
@@ -75,7 +75,7 @@ def chat():
     messages.append({"role": "assistant", "content": assistant_reply})
 
     # ✅ Store assistant reply in Redis
-    redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True).rpush(redis_key, str({"role": "assistant", "content": assistant_reply}))
+    redis.StrictRedis(host='redis', port=6379, db=0, decode_responses=True).rpush(redis_key, str({"role": "assistant", "content": assistant_reply}))
 
     return jsonify({"response": assistant_reply, "history": messages}), 200
 
@@ -83,7 +83,7 @@ def chat():
 def clear_history():
     user_id = session.get('user_id', request.remote_addr)
     redis_key = f"chat_history:{user_id}"
-    redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True).delete(redis_key)
+    redis.StrictRedis(host='redis', port=6379, db=0, decode_responses=True).delete(redis_key)
     return jsonify({"message": "Chat history cleared."}), 200
 
 if __name__ == '__main__':
