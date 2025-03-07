@@ -37,9 +37,6 @@ $env:LOCALHOST_IP="your-ip-here" # For Windows (PowerShell)
 ```
 Alternatively, you can manually copy and paste the API key inside the `docker-compose.yml` file.
 
-Set your IP manually in \static\app.js on line 8:
-
-const API_URL = "http://127.0.0.1:5000";  
 ---
 ## 🐳 Running with Docker
 

@@ -94,5 +94,10 @@ def clear_history():
     redis_conn.delete(redis_key)
     return jsonify({"message": "Chat history cleared."}), 200
 
+@app.route('/config')
+def config():
+    return jsonify({"api_url": f"http://{LOCALHOST_IP}:5000"})
+
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
