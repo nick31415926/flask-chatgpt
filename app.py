@@ -1,5 +1,6 @@
 import os
 import redis
+import json  # ✅ Import JSON for safe storage
 from flask import Flask, request, jsonify, session, send_from_directory, make_response
 from flask_cors import CORS
 from flask_session import Session
@@ -8,12 +9,17 @@ from openai import OpenAI
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 app.config['SECRET_KEY'] = 'your_secret_key'
 
-# ✅ Set up Redis for session storage
+# ✅ Set up Redis for session storage (Single Redis Connection)
+redis_conn = redis.StrictRedis(
+    host='redis', port=6379, db=0, encoding='utf-8', decode_responses=True
+)
+
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_KEY_PREFIX'] = 'chatbot:'
-app.config['SESSION_REDIS'] = redis.StrictRedis(host='redis', port=6379, db=0, decode_responses=True)
+app.config['SESSION_REDIS'] = redis_conn
+app.config['SESSION_SERIALIZATION_FORMAT'] = 'json'  # ✅ Store session data as JSON
 
 # ✅ Initialize session
 Session(app)
@@ -46,13 +52,15 @@ def chat():
 
     redis_key = f"chat_history:{user_id}"
 
-    # ✅ Retrieve chat history from Redis
-    chat_history = redis.StrictRedis(host='redis', port=6379, db=0, decode_responses=True).lrange(redis_key, 0, -1)
+    # ✅ Retrieve chat history from Redis (Using JSON instead of `eval()`)
+    chat_history = redis_conn.lrange(redis_key, 0, -1)
 
-    # ✅ Convert history to list of messages
     messages = [{"role": "system", "content": "You are a helpful assistant."}]
     for msg in chat_history:
-        messages.append(eval(msg))  # Convert string to dict
+        try:
+            messages.append(json.loads(msg))  # ✅ Convert JSON string to dict
+        except json.JSONDecodeError:
+            print(f"Warning: Skipping invalid JSON in Redis for key {redis_key}")
 
     # ✅ Append new user message
     messages.append({"role": "user", "content": user_message})
@@ -60,10 +68,10 @@ def chat():
     # ✅ Limit to last 10 messages to stay within OpenAI token limits
     messages = messages[-10:]
 
-    # ✅ Save updated history back to Redis
-    redis.StrictRedis(host='redis', port=6379, db=0, decode_responses=True).delete(redis_key)
+    # ✅ Save updated history back to Redis (Store as JSON)
+    redis_conn.delete(redis_key)
     for msg in messages:
-        redis.StrictRedis(host='redis', port=6379, db=0, decode_responses=True).rpush(redis_key, str(msg))
+        redis_conn.rpush(redis_key, json.dumps(msg))  # ✅ Store messages safely as JSON
 
     # ✅ Send request to OpenAI API
     response = client.chat.completions.create(
@@ -74,8 +82,8 @@ def chat():
     assistant_reply = response.choices[0].message.content
     messages.append({"role": "assistant", "content": assistant_reply})
 
-    # ✅ Store assistant reply in Redis
-    redis.StrictRedis(host='redis', port=6379, db=0, decode_responses=True).rpush(redis_key, str({"role": "assistant", "content": assistant_reply}))
+    # ✅ Store assistant reply in Redis (as JSON)
+    redis_conn.rpush(redis_key, json.dumps({"role": "assistant", "content": assistant_reply}))
 
     return jsonify({"response": assistant_reply, "history": messages}), 200
 
@@ -83,7 +91,7 @@ def chat():
 def clear_history():
     user_id = session.get('user_id', request.remote_addr)
     redis_key = f"chat_history:{user_id}"
-    redis.StrictRedis(host='redis', port=6379, db=0, decode_responses=True).delete(redis_key)
+    redis_conn.delete(redis_key)
     return jsonify({"message": "Chat history cleared."}), 200
 
 if __name__ == '__main__':
