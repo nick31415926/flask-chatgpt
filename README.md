@@ -12,7 +12,7 @@ This project provides a simple and modern web interface for interacting with Ope
 - **Dockerized Deployment** – Quickly deploy with `docker compose up -d --build`.
 
 ---
-NOTE: if running in docker, skip to step 5 as the dependencies will be installed in the docker container.
+
 ## 📦 Installation & Setup
 
 ### 1️⃣  Clone the Repository

@@ -2,8 +2,23 @@
 const chatBox = document.getElementById("chat-box");
 const userInput = document.getElementById("user-input");
 
-// ✅ API URL (Updated to match Flask server IP)
-const API_URL = "http://192.168.1.212:5000";  
+// ✅ API URL (using your Flask server IP from environment variable)
+// DOES NOT WORK - const LOCALHOST_IP = process.env.LOCALHOST_IP || "localhost"; // Fallback to localhost if not set
+//const LOCALHOST_IP = "127.0.0.1"; // Adjust based on your network
+const API_URL = "http://127.0.0.1:5000";  
+
+// ✅ Focus input field when user taps anywhere on chat
+document.addEventListener("click", () => {
+    userInput.focus();
+});
+
+// ✅ Send message when Enter key is pressed (Mobile keyboard fix)
+userInput.addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        sendMessage();
+    }
+});
 
 // ✅ Handle sending messages
 async function sendMessage() {
@@ -44,19 +59,26 @@ function appendMessage(sender, message, className) {
     msgElement.classList.add("message", className);
     msgElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
     chatBox.appendChild(msgElement);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    // ✅ Auto-scroll smoothly on mobile
+    setTimeout(() => {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 100);
 }
 
 // ✅ Show Typing Animation
 function showTypingIndicator() {
-    if (document.getElementById("typing-indicator")) return; // Prevent multiple indicators
+    if (document.getElementById("typing-indicator")) return;
 
     const typingElement = document.createElement("div");
     typingElement.classList.add("typing-indicator");
     typingElement.id = "typing-indicator";
-    typingElement.innerHTML = "<span></span><span></span><span></span>";
+    typingElement.innerHTML = `<span></span><span></span><span></span>`;
     chatBox.appendChild(typingElement);
-    chatBox.scrollTop = chatBox.scrollHeight;
+
+    setTimeout(() => {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 100);
 }
 
 // ✅ Remove Typing Animation
@@ -77,3 +99,23 @@ async function clearChat() {
     }
 }
 
+// ✅ Save chat as a text file with a timestamped filename
+function saveChat() {
+    let chatContent = "";
+    document.querySelectorAll(".message").forEach((msg) => {
+        chatContent += msg.innerText + "\n\n"; // Format chat messages
+    });
+
+    // ✅ Generate timestamp for the filename
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-"); // Format: YYYY-MM-DDTHH-MM-SS
+    const filename = `ChatGPT-Log-${timestamp}.txt`;
+
+    // ✅ Create a downloadable text file
+    const blob = new Blob([chatContent], { type: "text/plain" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
