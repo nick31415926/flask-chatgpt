@@ -5,12 +5,12 @@ This project provides a simple and modern web interface for interacting with Ope
 ## 🚀 Features
 
 - **Interactive Chat UI** – Clean, responsive web interface for chatting with OpenAI's GPT models.
-- **Chat History Storage** – Session-based memory so the assistant remembers past messages.
+- **Chat History Storage** – Session-based memory that persists browser refreshes and closures so the assistant remembers past messages.
 - **Typing Indicator** – Shows when the assistant is "thinking."
 - **Dark Mode UI** – Modern, mobile-friendly, and easy on the eyes.
 - **Chat Saving** – Save chat logs as timestamped text files.
 - **Dockerized Deployment** – Quickly deploy with `docker compose up -d --build`.
-- **Redis Integration** – hat history is now stored in Redis instead of Flask sessions.
+- **Redis Integration** – Chat history is now stored in Redis instead of Flask sessions.
 - **Safe JSON Storage** – Replaced eval() with json.loads() for secure Redis data retrieval.
 
 ---
