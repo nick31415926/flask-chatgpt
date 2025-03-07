@@ -14,6 +14,8 @@ This project provides a simple and modern web interface for interacting with Ope
 - **Safe JSON Storage** – Replaced eval() with json.loads() for secure Redis data retrieval.
 
 ---
+![Alt text](images/chatui.jpg)
+---
 
 ## 📦 Installation & Setup
 

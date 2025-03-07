@@ -49,6 +49,14 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchConfig().then(() => {
         loadChatHistory(); // Ensure history loads after API_URL is set
     });
+    
+    // ✅ Send message when Enter key is pressed
+    userInput.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
 
     // ✅ Handle sending messages
     async function sendMessage() {
