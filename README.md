@@ -1,6 +1,6 @@
-# AI Chat UI for OpenAI (Flask + Docker)
+# AI Chat UI for OpenAI (Flask + Redis + Docker)
 
-This project provides a simple and modern web interface for interacting with OpenAI's GPT models using Flask, JavaScript, and Docker. It includes chat history tracking, dark mode, typing indicators, and chat saving.
+This project provides a simple and modern web interface for interacting with OpenAI's GPT models using Flask, JavaScript, Redis, and Docker. It includes chat history tracking, dark mode, typing indicators, and chat saving.
 
 ## 🚀 Features
 
@@ -10,6 +10,8 @@ This project provides a simple and modern web interface for interacting with Ope
 - **Dark Mode UI** – Modern, mobile-friendly, and easy on the eyes.
 - **Chat Saving** – Save chat logs as timestamped text files.
 - **Dockerized Deployment** – Quickly deploy with `docker compose up -d --build`.
+- **Redis Integration** – hat history is now stored in Redis instead of Flask sessions.
+- **Safe JSON Storage** – Replaced eval() with json.loads() for secure Redis data retrieval.
 
 ---
 
@@ -93,7 +95,14 @@ Once the server is running, open your browser and go to:
 - **Save Chat Logs**
 
 ---
+## 🔧 Backend Improvements
 
+- **Redis Integration** – Chat history is now stored in Redis instead of Flask sessions.
+- **Single Redis Connection** – Optimized performance with a shared Redis instance.
+- **Safe JSON Storage** – Prevents errors by using json.dumps() and json.loads() instead of eval().
+- **Fixed Encoding Issues** – Now explicitly setting utf-8 for Redis storage and retrieval.
+- **Session Persistence** – Users' chat histories persist across multiple messages without crashing.
+---
 ## 🤖 Setting your Open AI model
 
 Modify `app.py`:
